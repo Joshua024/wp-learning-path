@@ -406,6 +406,176 @@
   .resource-type.paid { color: #fb923c; background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2); }
   .resource-type.codebase { color: var(--accent); background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.2); }
 
+  /* Actions bar (streak + export/import) */
+  .actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .streak-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .streak-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+  }
+  .streak-item .streak-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fb923c;
+  }
+  .streak-item.best .streak-num { color: var(--accent); }
+  .actions-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .action-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Tag filter bar */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .filter-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-tag:hover { border-color: var(--accent); color: var(--text); }
+  .filter-tag.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Per-phase progress */
+  .phase-progress {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: auto;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .phase-progress-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .phase-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  /* Lesson notes */
+  .lesson-notes {
+    margin-top: 14px;
+  }
+  .lesson-notes label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .lesson-notes textarea {
+    width: 100%;
+    min-height: 70px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    resize: vertical;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+  .lesson-notes textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .lesson-notes textarea::placeholder { color: var(--muted); opacity: 0.5; }
+
+  /* Current lesson indicator */
+  .lesson.current {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent), 0 0 20px rgba(108,99,255,0.15);
+  }
+  .current-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(108,99,255,0.12);
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-left: 8px;
+  }
+  .jump-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    color: var(--accent);
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(108,99,255,0.2);
+  }
+  .jump-btn:hover { background: var(--accent); color: white; }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -435,6 +605,32 @@
   </div>
 
   <div id="curriculum"></div>
+
+  <div class="actions-bar">
+    <div class="streak-display">
+      <div class="streak-item"><span class="streak-num" id="currentStreak">0</span> day streak</div>
+      <div class="streak-item best"><span class="streak-num" id="bestStreak">0</span> best</div>
+    </div>
+    <div class="actions-btns">
+      <button class="action-btn" id="exportBtn">↓ Export</button>
+      <button class="action-btn" id="importBtn">↑ Import</button>
+      <input type="file" id="importFile" accept=".json" hidden>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-tag active" data-tag="all">All</button>
+    <button class="filter-tag" data-tag="php">PHP</button>
+    <button class="filter-tag" data-tag="wp">WP Hooks</button>
+    <button class="filter-tag" data-tag="acf">ACF</button>
+    <button class="filter-tag" data-tag="twig">Twig/Timber</button>
+    <button class="filter-tag" data-tag="hc3">HC3</button>
+    <button class="filter-tag" data-tag="project">Project</button>
+  </div>
+
+  <div id="curriculumContent"></div>
+
+  <button class="jump-btn" id="jumpBtn" style="display:none;">↓ Jump to Current</button>
 
   <div id="congrats">
     <h3>🎉 Path Complete, Joshua.</h3>
@@ -849,6 +1045,8 @@ const curriculum = [
 ];
 
 const STORAGE_KEY = 'wp_mastery_progress';
+const NOTES_KEY = 'wp_mastery_notes';
+const STREAK_KEY = 'wp_mastery_streak';
 
 function loadProgress() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
@@ -856,9 +1054,57 @@ function loadProgress() {
 function saveProgress(p) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch {}
 }
+function loadNotes() {
+  try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; } catch { return {}; }
+}
+function saveNotes(n) {
+  try { localStorage.setItem(NOTES_KEY, JSON.stringify(n)); } catch {}
+}
+function loadStreak() {
+  try { return JSON.parse(localStorage.getItem(STREAK_KEY)) || { current: 0, best: 0, lastDate: null }; } catch { return { current: 0, best: 0, lastDate: null }; }
+}
+function saveStreak(s) {
+  try { localStorage.setItem(STREAK_KEY, JSON.stringify(s)); } catch {}
+}
 
 let progress = loadProgress();
+let notes = loadNotes();
+let streak = loadStreak();
+let activeFilter = 'all';
 
+// --- Streak Logic ---
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+function yesterdayStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().split('T')[0];
+}
+function recordStreak() {
+  const today = todayStr();
+  if (streak.lastDate === today) return; // already recorded today
+  if (streak.lastDate === yesterdayStr()) {
+    streak.current += 1;
+  } else {
+    streak.current = 1;
+  }
+  streak.lastDate = today;
+  if (streak.current > streak.best) streak.best = streak.current;
+  saveStreak(streak);
+  updateStreakDisplay();
+}
+function updateStreakDisplay() {
+  // Check if streak is stale (last activity was before yesterday)
+  if (streak.lastDate && streak.lastDate !== todayStr() && streak.lastDate !== yesterdayStr()) {
+    streak.current = 0;
+    saveStreak(streak);
+  }
+  document.getElementById('currentStreak').textContent = streak.current;
+  document.getElementById('bestStreak').textContent = streak.best;
+}
+
+// --- Core Functions ---
 function totalLessons() {
   return curriculum.reduce((a, p) => a + p.lessons.length, 0);
 }
@@ -872,6 +1118,8 @@ function updateProgress() {
   document.getElementById('barFill').style.width = pct + '%';
   document.getElementById('progressCount').innerHTML = `${done} <span>/ ${total} lessons</span>`;
   document.getElementById('congrats').classList.toggle('show', done === total);
+  updatePhaseProgress();
+  markCurrentLesson();
 }
 
 function lessonId(phaseIdx, lessonIdx) {
@@ -883,12 +1131,63 @@ function buildTag(type) {
   return `<span class="tag ${type}">${labels[type] || type}</span>`;
 }
 
+// --- Per-Phase Progress ---
+function updatePhaseProgress() {
+  curriculum.forEach((phase, pi) => {
+    const total = phase.lessons.length;
+    const done = phase.lessons.filter((_, li) => progress[lessonId(pi, li)]).length;
+    const pct = (done / total) * 100;
+    const fillEl = document.getElementById(`phase-fill-${pi}`);
+    const countEl = document.getElementById(`phase-count-${pi}`);
+    if (fillEl) {
+      fillEl.style.width = pct + '%';
+      fillEl.style.background = phase.color;
+    }
+    if (countEl) countEl.textContent = `${done}/${total}`;
+  });
+}
+
+// --- Current Lesson Indicator ---
+function markCurrentLesson() {
+  document.querySelectorAll('.lesson.current').forEach(el => {
+    el.classList.remove('current');
+    const label = el.querySelector('.current-label');
+    if (label) label.remove();
+  });
+
+  let found = false;
+  for (let pi = 0; pi < curriculum.length; pi++) {
+    for (let li = 0; li < curriculum[pi].lessons.length; li++) {
+      const id = lessonId(pi, li);
+      if (!progress[id]) {
+        const el = document.querySelector(`.lesson[data-id="${id}"]`);
+        if (el) {
+          el.classList.add('current');
+          const titleEl = el.querySelector('.lesson-title');
+          if (titleEl && !titleEl.querySelector('.current-label')) {
+            titleEl.insertAdjacentHTML('beforeend', '<span class="current-label">Up Next</span>');
+          }
+          found = true;
+        }
+        break;
+      }
+    }
+    if (found) break;
+  }
+
+  const jumpBtn = document.getElementById('jumpBtn');
+  jumpBtn.style.display = found ? 'block' : 'none';
+}
+
+// --- Build Lesson ---
 function buildLesson(lesson, pid, lid) {
   const id = lessonId(pid, lid);
   const isDone = !!progress[id];
+  const savedNote = notes[id] || '';
   const el = document.createElement('div');
   el.className = 'lesson' + (isDone ? ' done' : '');
   el.dataset.id = id;
+  el.dataset.tags = lesson.tags.join(',');
 
   const resourcesHtml = lesson.resources ? `
     <div class="resources">
@@ -930,6 +1229,10 @@ function buildLesson(lesson, pid, lid) {
         <div class="challenge-label">🔥 Hands-On Challenge</div>
         <p>${lesson.challenge}</p>
       </div>
+      <div class="lesson-notes">
+        <label>📝 Your Notes</label>
+        <textarea placeholder="What did you learn? What was tricky?" data-id="${id}">${savedNote}</textarea>
+      </div>
       <button class="complete-btn" data-id="${id}">${isDone ? '✓ Completed — Mark Incomplete' : 'Mark as Complete'}</button>
     </div>
   `;
@@ -951,6 +1254,16 @@ function buildLesson(lesson, pid, lid) {
     toggleComplete(id, el);
   });
 
+  // Notes auto-save
+  let noteTimer;
+  el.querySelector('.lesson-notes textarea').addEventListener('input', (e) => {
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      notes[e.target.dataset.id] = e.target.value;
+      saveNotes(notes);
+    }, 400);
+  });
+
   return el;
 }
 
@@ -960,20 +1273,29 @@ function toggleComplete(id, el) {
   const isDone = progress[id];
   el.classList.toggle('done', isDone);
   el.querySelector('.complete-btn').textContent = isDone ? '✓ Completed — Mark Incomplete' : 'Mark as Complete';
+  if (isDone) recordStreak();
   updateProgress();
 }
 
+// --- Build Curriculum ---
 function buildCurriculum() {
-  const container = document.getElementById('curriculum');
+  const container = document.getElementById('curriculumContent');
   curriculum.forEach((phase, pi) => {
     const section = document.createElement('div');
     section.className = 'phase';
+    section.dataset.phaseIdx = pi;
     const header = document.createElement('div');
     header.className = 'phase-header';
     header.innerHTML = `
       <span class="phase-dot" style="background:${phase.color}"></span>
       <span class="phase-num">${phase.phase}</span>
       <span class="phase-title">${phase.title}</span>
+      <div class="phase-progress">
+        <span id="phase-count-${pi}">0/${phase.lessons.length}</span>
+        <div class="phase-progress-bar">
+          <div class="phase-progress-fill" id="phase-fill-${pi}"></div>
+        </div>
+      </div>
     `;
     section.appendChild(header);
     const lessonsWrap = document.createElement('div');
@@ -986,8 +1308,99 @@ function buildCurriculum() {
   });
 }
 
+// --- Tag Filter ---
+function applyFilter(tag) {
+  activeFilter = tag;
+  document.querySelectorAll('.filter-tag').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === tag);
+  });
+  document.querySelectorAll('.lesson').forEach(el => {
+    if (tag === 'all') {
+      el.style.display = '';
+    } else {
+      const tags = el.dataset.tags.split(',');
+      el.style.display = tags.includes(tag) ? '' : 'none';
+    }
+  });
+  // Hide phases with no visible lessons
+  document.querySelectorAll('.phase').forEach(phase => {
+    const visible = phase.querySelectorAll('.lesson:not([style*="display: none"])');
+    phase.style.display = visible.length ? '' : 'none';
+  });
+}
+
+document.getElementById('filterBar').addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-tag');
+  if (!btn) return;
+  applyFilter(btn.dataset.tag);
+});
+
+// --- Jump to Current ---
+document.getElementById('jumpBtn').addEventListener('click', () => {
+  const current = document.querySelector('.lesson.current');
+  if (current) {
+    current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    current.classList.add('open');
+  }
+});
+
+// --- Export / Import ---
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = {
+    progress: progress,
+    notes: notes,
+    streak: streak,
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `wp-mastery-backup-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.progress) {
+        progress = data.progress;
+        saveProgress(progress);
+      }
+      if (data.notes) {
+        notes = data.notes;
+        saveNotes(notes);
+      }
+      if (data.streak) {
+        streak = data.streak;
+        saveStreak(streak);
+      }
+      // Rebuild the UI
+      document.getElementById('curriculumContent').innerHTML = '';
+      buildCurriculum();
+      updateProgress();
+      updateStreakDisplay();
+    } catch {
+      alert('Invalid backup file.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// --- Init ---
 buildCurriculum();
 updateProgress();
+updateStreakDisplay();
 </script>
 </body>
 </html>
