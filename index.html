@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WP Mastery Path — Joshua</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #6c63ff;
+    --accent2: #00e5a0;
+    --accent3: #ff6b6b;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --done: #00e5a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(108,99,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,229,160,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  .header { margin-bottom: 48px; }
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--accent2);
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .progress-info { flex: 1; }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+  .progress-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+  .progress-count span { font-size: 14px; color: var(--muted); font-weight: 400; font-family: 'DM Sans', sans-serif; }
+
+  /* Phase */
+  .phase { margin-bottom: 40px; }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .phase-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .phase-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Lesson card */
+  .lesson {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .lesson:hover { border-color: var(--accent); transform: translateX(3px); }
+  .lesson.done {
+    border-color: rgba(0,229,160,0.3);
+    background: rgba(0,229,160,0.04);
+  }
+  .lesson.done:hover { border-color: var(--accent2); }
+
+  .lesson-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: transparent;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+    cursor: pointer;
+  }
+  .lesson.done .check {
+    background: var(--accent2);
+    border-color: var(--accent2);
+  }
+  .check svg { display: none; }
+  .lesson.done .check svg { display: block; }
+
+  .lesson-meta { flex: 1; min-width: 0; }
+  .lesson-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .lesson-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .lesson-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+  .tag.php { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.06); }
+  .tag.wp { color: #60a5fa; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.06); }
+  .tag.twig { color: var(--accent2); border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.06); }
+  .tag.project { color: #fb923c; border-color: rgba(251,146,60,0.3); background: rgba(251,146,60,0.06); }
+  .tag.quiz { color: #f472b6; border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.06); }
+  .tag.acf { color: #facc15; border-color: rgba(250,204,21,0.3); background: rgba(250,204,21,0.06); }
+  .tag.hc3 { color: var(--accent); border-color: rgba(108,99,255,0.3); background: rgba(108,99,255,0.06); }
+
+  .expand-btn {
+    color: var(--muted);
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: transform 0.2s, color 0.2s;
+    margin-top: 2px;
+    line-height: 1;
+  }
+  .lesson.open .expand-btn { transform: rotate(180deg); color: var(--accent); }
+
+  .lesson-body {
+    display: none;
+    padding: 0 20px 20px 56px;
+    border-top: 1px solid var(--border);
+  }
+  .lesson.open .lesson-body { display: block; }
+
+  .lesson-body h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 16px 0 10px;
+  }
+  .lesson-body ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .lesson-body ul li {
+    font-size: 13px;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .lesson-body ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+    font-size: 11px;
+    top: 1px;
+  }
+  .challenge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 14px;
+  }
+  .challenge-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 6px;
+  }
+  .challenge p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .complete-btn {
+    margin-top: 16px;
+    padding: 9px 20px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .complete-btn:hover { background: var(--accent); color: white; }
+  .lesson.done .complete-btn {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .lesson.done .complete-btn:hover { background: var(--accent2); color: var(--bg); }
+
+  /* Timeline connector */
+  .phase-lessons { position: relative; padding-left: 0; }
+
+  /* Congrats banner */
+  #congrats {
+    display: none;
+    background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,229,160,0.1));
+    border: 1px solid var(--accent2);
+    border-radius: 16px;
+    padding: 28px 32px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  #congrats.show { display: block; animation: fadeUp 0.5s ease; }
+  #congrats h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--accent2);
+  }
+  #congrats p { color: var(--muted); font-size: 14px; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Resources */
+  .resources {
+    margin-top: 14px;
+  }
+  .resources h4 {
+    color: var(--accent2) !important;
+  }
+  .resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 0 !important;
+  }
+  .resource-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .resource-item:hover {
+    border-color: var(--accent2);
+    background: rgba(0,229,160,0.05);
+  }
+  .resource-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .resource-content { flex: 1; min-width: 0; }
+  .resource-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .resource-note {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .resource-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .resource-type.free { color: var(--accent2); background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.2); }
+  .resource-type.paid { color: #fb923c; background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2); }
+  .resource-type.codebase { color: var(--accent); background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.2); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media(max-width: 600px) {
+    .lesson-body { padding-left: 20px; }
+    .progress-bar-wrap { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-tag">WordPress Mastery Path</div>
+    <h1>From Support Dev<br>to <span>WP Architect</span></h1>
+    <p class="header-sub">Built around Brad's advice — focused on WP internals, hooks, filters, CRUD, and the HC3 Timber/Twig stack. 1 hour/day. Hands-on first.</p>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-info">
+      <div class="progress-label">Overall Progress</div>
+      <div class="bar-bg"><div class="bar-fill" id="barFill"></div></div>
+    </div>
+    <div class="progress-count" id="progressCount">0 <span>/ 24 lessons</span></div>
+  </div>
+
+  <div id="curriculum"></div>
+
+  <div id="congrats">
+    <h3>🎉 Path Complete, Joshua.</h3>
+    <p>You've gone from support dev to someone who can build, explain, and architect WordPress from first principles. Now go build something real.</p>
+  </div>
+
+</div>
+
+<script>
+const curriculum = [
+  {
+    phase: "Phase 1",
+    title: "PHP Foundations for WordPress",
+    color: "#a78bfa",
+    lessons: [
+      {
+        title: "PHP Crash Course for WordPress Developers",
+        desc: "The PHP you actually need — no fluff, no theory overload.",
+        tags: ["php"],
+        topics: [
+          "Variables, arrays, loops, conditionals",
+          "Functions, scope, return values",
+          "Classes, objects, constructors",
+          "Namespaces and autoloading (why HC3 uses them)",
+          "Reading and extending existing classes"
+        ],
+        challenge: "Write a PHP class called SiteHelper with a method get_greeting() that returns a string. Extend it in a child class and override the method.",
+        resources: [
+          { name: "PHP For Beginners — Laracasts", url: "https://laracasts.com/series/php-for-beginners", note: "Best hands-on PHP intro for developers. Start here.", type: "free", icon: "🎬" },
+          { name: "PHP Official Docs — Classes & Objects", url: "https://www.php.net/manual/en/language.oop5.php", note: "Reference for classes, constructors, inheritance, namespaces.", type: "free", icon: "📖" },
+          { name: "HC3 Base Class — class-honeycom3-custom-post-type.php", url: "https://bitbucket.org/fatbeehive/project-hc3-starter/src/master/web/wp-content/themes/honeycom3/classes/class-honeycom3-custom-post-type.php", note: "Read this alongside Laracasts. See how real classes are structured in your codebase.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "How WordPress Loads — The Big Picture",
+        desc: "Understand what happens from URL request to rendered page.",
+        tags: ["wp"],
+        topics: [
+          "The WP request lifecycle step by step",
+          "wp-load.php, functions.php, template hierarchy",
+          "How WordPress decides which template file to load",
+          "Where plugins and themes hook into the lifecycle"
+        ],
+        challenge: "Open a WordPress install. Using browser dev tools and a simple error_log(), trace which template file loads when you visit the homepage vs a single post.",
+        resources: [
+          { name: "WP Execution Order — WP Docs", url: "https://developer.wordpress.org/plugins/hooks/", note: "Official overview of the WP loading sequence and where hooks fire.", type: "free", icon: "📖" },
+          { name: "WordPress Theme Handbook", url: "https://developer.wordpress.org/themes/basics/", note: "Covers functions.php, template files, and how WP themes are structured.", type: "free", icon: "📖" },
+          { name: "Query Monitor Plugin", url: "https://wordpress.org/plugins/query-monitor/", note: "Install this on your local WP. It shows you exactly which template file is loading on every page — invaluable for tracing.", type: "free", icon: "🔧" }
+        ]
+      },
+      {
+        title: "WordPress Template Hierarchy Deep Dive",
+        desc: "Master how WP decides which file renders — foundational for HC3.",
+        tags: ["wp"],
+        topics: [
+          "The full template hierarchy chart",
+          "page.php vs single.php vs archive.php",
+          "Custom templates via comments",
+          "How HC3 maps PHP templates to Twig via Timber"
+        ],
+        challenge: "Without looking, predict which template file loads for: homepage, single post, category archive, custom post type single. Then verify.",
+        resources: [
+          { name: "Template Hierarchy — WordPress Docs", url: "https://developer.wordpress.org/themes/basics/template-hierarchy/", note: "The official, definitive hierarchy reference with full visual chart.", type: "free", icon: "📖" },
+          { name: "Template Hierarchy Visual Chart — wphierarchy.com", url: "https://wphierarchy.com/", note: "Interactive visual map of the full hierarchy. Bookmark this.", type: "free", icon: "🗺️" },
+          { name: "HC3 Page Template Example", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/web/wp-content/themes/honeycom3/page-stories-listing.php", note: "See how HC3 uses PHP templates as thin controllers that hand off to Timber/Twig.", type: "codebase", icon: "🏗️" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 2",
+    title: "WordPress Hooks — The Core Mental Model",
+    color: "#60a5fa",
+    lessons: [
+      {
+        title: "Actions vs Filters — The Fundamental Difference",
+        desc: "The single most important concept in WordPress development.",
+        tags: ["wp"],
+        topics: [
+          "What hooks are and why WP uses them",
+          "add_action() — doing something at a moment in time",
+          "add_filter() — modifying a value before it's used",
+          "Priority and accepted_args parameters explained",
+          "How to find what hooks exist at any point"
+        ],
+        challenge: "Use add_action('wp_footer') to inject a custom div into every page footer. Then use add_filter('the_title') to append ' | My Site' to every post title on the frontend.",
+        resources: [
+          { name: "Hooks — WordPress Plugin Developer Handbook", url: "https://developer.wordpress.org/plugins/hooks/", note: "The best starting point. Read the Actions and Filters sections in full.", type: "free", icon: "📖" },
+          { name: "Brad Schiff's WordPress Course — Hooks Section", url: "https://www.udemy.com/course/become-a-wordpress-developer-php-javascript/", note: "Go back to Brad's course specifically for the hooks lessons now — they'll click differently.", type: "paid", icon: "🎬" },
+          { name: "Adam Brown's WP Hooks Reference", url: "https://adambrown.info/p/wp_hooks", note: "Searchable database of every hook in WP core — use this to find hooks you need.", type: "free", icon: "🔍" }
+        ]
+      },
+      {
+        title: "The Most Important WP Action Hooks",
+        desc: "The hooks you'll use 80% of the time — memorise these.",
+        tags: ["wp"],
+        topics: [
+          "init — registering things (post types, taxonomies, scripts)",
+          "wp_enqueue_scripts — loading CSS and JS correctly",
+          "after_setup_theme — theme support declarations",
+          "save_post — reacting when content is saved",
+          "template_redirect — controlling what loads",
+          "timber/context — the HC3 hook for passing data to Twig"
+        ],
+        challenge: "Use wp_enqueue_scripts to load a custom CSS file only on single post pages. Use conditional tags like is_single() to target correctly.",
+        resources: [
+          { name: "WP Action Reference — developer.wordpress.org", url: "https://developer.wordpress.org/reference/hooks/", note: "Filter by 'action' — search the ones from this lesson and read each one's source.", type: "free", icon: "📖" },
+          { name: "Conditional Tags Reference", url: "https://developer.wordpress.org/themes/references/list-of-conditional-tags/", note: "Essential for targeting hooks to specific pages — is_single(), is_archive() etc.", type: "free", icon: "📖" },
+          { name: "HC3 Theme Class — timber/context usage", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/web/wp-content/themes/honeycom3/classes/class-honeycom3-theme.php", note: "See how HC3 uses after_setup_theme and WooCommerce hooks in a real theme class.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "The Most Important WP Filter Hooks",
+        desc: "Filters let you modify data — essential for HC3 controller classes.",
+        tags: ["wp"],
+        topics: [
+          "the_content, the_title, the_excerpt",
+          "wp_nav_menu_items — modifying menus",
+          "body_class — adding custom classes",
+          "timber/context — filtering the Timber context array (HC3 specific)",
+          "post_class, get_template_part overrides"
+        ],
+        challenge: "Use add_filter('body_class') to add a custom class to the body tag based on the current page template. Log the Timber context array on an HC3 page using error_log(print_r($context, true)).",
+        resources: [
+          { name: "Filter Reference — WordPress Docs", url: "https://developer.wordpress.org/reference/hooks/", note: "Filter the list by 'filter' type. Read the_content, body_class, and wp_nav_menu_items.", type: "free", icon: "📖" },
+          { name: "Timber Context Filter Docs", url: "https://timber.github.io/docs/v2/guides/context/", note: "Timber's official guide on how the context filter works — critical for HC3.", type: "free", icon: "📖" },
+          { name: "HC3 Stories Class — timber/context filter in action", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/web/wp-content/themes/honeycom3/classes/class-honeycom3-stories.php", note: "Real-world example of filtering the Timber context to pass data to Twig.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "Building Your Own Hooks — Actions & Filters",
+        desc: "Senior-level skill: design extensible code others can hook into.",
+        tags: ["wp", "php"],
+        topics: [
+          "do_action() — firing your own action",
+          "apply_filters() — making your output filterable",
+          "Why HC3 uses filters like fb_gutenberg_twiggify",
+          "When to expose hooks vs keep logic internal"
+        ],
+        challenge: "Create a function that builds a data array for a card component. Use apply_filters() to make the array filterable, then in another function, hook in and add an extra field.",
+        resources: [
+          { name: "do_action() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/do_action/", note: "Read the full reference including the examples at the bottom.", type: "free", icon: "📖" },
+          { name: "apply_filters() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/apply_filters/", note: "Understand the signature and how to make your own data filterable.", type: "free", icon: "📖" },
+          { name: "HC3 FB Gutenberg Plugin — fb_gutenberg_twiggify filter", url: "https://bitbucket.org/fatbeehive/workspace/", note: "Find where fb_gutenberg_twiggify is fired in the HC3 Gutenberg plugin — trace how it's used.", type: "codebase", icon: "🏗️" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 3",
+    title: "Custom Post Types, Taxonomies & ACF",
+    color: "#facc15",
+    lessons: [
+      {
+        title: "Registering Custom Post Types in Code",
+        desc: "Move beyond ACF UI — understand what's happening under the hood.",
+        tags: ["wp", "acf"],
+        topics: [
+          "register_post_type() — every important argument",
+          "Labels, supports, rewrite, has_archive",
+          "Capability types and what they mean",
+          "How ACF stores CPTs as JSON (what HC3 does)",
+          "Activating and deactivating CPTs in HC3"
+        ],
+        challenge: "Register a custom post type 'projects' in code (not ACF). Give it a custom slug, archive, and admin icon. Then replicate the same in ACF UI and compare the JSON output.",
+        resources: [
+          { name: "register_post_type() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/register_post_type/", note: "Read every argument. This is the definitive reference — don't skip any.", type: "free", icon: "📖" },
+          { name: "ACF Post Types — ACF Docs", url: "https://www.advancedcustomfields.com/resources/post-types/", note: "How ACF manages CPTs via UI and JSON sync — exactly what HC3 uses.", type: "free", icon: "📖" },
+          { name: "HC3 ACF Post Types Admin", url: "https://master-7rqtwti-vv26nbhbg5y2s.uk-1.platformsh.site/wp-admin/edit.php?post_type=acf-post-type", note: "Live HC3 Starter ACF post type admin — study how CPTs are configured here.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "Taxonomies — Custom Categories and Tags",
+        desc: "Filtering, grouping, and querying content — core to HC3 listings.",
+        tags: ["wp", "acf"],
+        topics: [
+          "register_taxonomy() — hierarchical vs flat",
+          "Connecting taxonomies to post types",
+          "Getting terms — get_terms(), get_the_terms()",
+          "Using taxonomies to build filterable listing pages",
+          "How HC3's listing classes prepare taxonomy data for Twig"
+        ],
+        challenge: "Register a taxonomy 'project_type' for your 'projects' CPT. Create 3 terms. Write a function that returns all terms as an array of [id, name, slug] objects — exactly as you'd pass to Twig.",
+        resources: [
+          { name: "register_taxonomy() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/register_taxonomy/", note: "Full reference — pay attention to hierarchical, rewrite, and show_in_rest args.", type: "free", icon: "📖" },
+          { name: "get_terms() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/get_terms/", note: "How to query taxonomy terms — essential for building filters in listing pages.", type: "free", icon: "📖" },
+          { name: "HC3 Stories Listing Class — taxonomy data prep", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/e868fa4f1cb188d1bb632609778e45f27bdd6289/web/wp-content/themes/honeycom3/classes/class-honeycom3-stories.php#lines-227", note: "See exactly how HC3 prepares taxonomy data for listing filters. Study lines 227–248.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "ACF Deep Dive — Fields, Groups & JSON Sync",
+        desc: "ACF is the backbone of HC3. Know it properly.",
+        tags: ["acf"],
+        topics: [
+          "Field groups, locations, and conditional logic",
+          "Flexible content and repeater fields",
+          "ACF JSON — why it exists, where it lives, how to deploy",
+          "get_field() vs get_post_meta() — difference matters",
+          "Using ACF blocks in HC3 Gutenberg setup"
+        ],
+        challenge: "Create an ACF field group for your 'projects' CPT with: title (text), intro (textarea), featured_image (image), project_type (taxonomy). Output all fields in a Twig template.",
+        resources: [
+          { name: "ACF Documentation — Getting Started", url: "https://www.advancedcustomfields.com/resources/", note: "ACF's own docs are excellent. Start with field groups, then get_field(), then JSON sync.", type: "free", icon: "📖" },
+          { name: "ACF Local JSON — ACF Docs", url: "https://www.advancedcustomfields.com/resources/local-json/", note: "How ACF JSON sync works — critical because HC3 uses this for all field deployment.", type: "free", icon: "📖" },
+          { name: "ACF Blocks — ACF Docs", url: "https://www.advancedcustomfields.com/resources/blocks/", note: "How ACF powers the custom Gutenberg blocks in HC3's FB Gutenberg plugin.", type: "free", icon: "📖" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 4",
+    title: "Timber, Twig & the HC3 Controller Pattern",
+    color: "#00e5a0",
+    lessons: [
+      {
+        title: "Timber Context — The Data Bridge",
+        desc: "The most important Timber concept for HC3 development.",
+        tags: ["twig", "hc3"],
+        topics: [
+          "What Timber::context() returns",
+          "Passing custom data into context",
+          "The timber/context filter — how HC3 classes add data",
+          "Timber::render() vs Timber::compile()",
+          "Namespaces: @hc, @wp, @overrides — how resolution works"
+        ],
+        challenge: "In a page template, get the Timber context, add a custom key 'page_intro' with a value, and render it in a Twig template using {{ page_intro }}.",
+        resources: [
+          { name: "Timber Context Guide — Timber Docs", url: "https://timber.github.io/docs/v2/guides/context/", note: "The primary resource for understanding context and the timber/context filter.", type: "free", icon: "📖" },
+          { name: "Timber::render() vs compile() — Timber Docs", url: "https://timber.github.io/docs/v2/reference/timber/", note: "Understand the difference between rendering and compiling a Twig template.", type: "free", icon: "📖" },
+          { name: "HC3 Single Template — context in practice", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/web/wp-content/themes/honeycom3/single-story.php", note: "See a real HC3 single template — how context is built and passed to Twig.", type: "codebase", icon: "🏗️" }
+        ]
+      },
+      {
+        title: "Twig Templating Mastery",
+        desc: "Twig is powerful — learn what WP developers actually need.",
+        tags: ["twig"],
+        topics: [
+          "Variables, loops, conditionals in Twig",
+          "include vs extends vs embed — knowing when to use each",
+          "Blocks and template inheritance (how HC3 overrides work)",
+          "Filters and functions in Twig",
+          "Accessing WP functions from Twig via Timber"
+        ],
+        challenge: "Build a Twig template for a project card that uses extends, defines a content block, and renders: title, intro, image, and project_type taxonomy terms as badges.",
+        resources: [
+          { name: "Twig for Template Designers — Official Twig Docs", url: "https://twig.symfony.com/doc/3.x/templates.html", note: "The complete Twig reference. Bookmark and search this whenever you hit a Twig syntax question.", type: "free", icon: "📖" },
+          { name: "Timber + Twig — Timber Docs", url: "https://timber.github.io/docs/v2/guides/twig/", note: "Timber-specific Twig guide — covers WP functions available inside Twig templates.", type: "free", icon: "📖" },
+          { name: "Twig extends/embed/include explained", url: "https://twig.symfony.com/doc/3.x/tags/extends.html", note: "Read extends, include, and embed pages. These three are the core of how HC3 templates inherit and override.", type: "free", icon: "📖" }
+        ]
+      },
+      {
+        title: "The HC3 Controller Class Pattern",
+        desc: "The architectural pattern that powers every HC3 project.",
+        tags: ["php", "hc3"],
+        topics: [
+          "What a controller class does in HC3",
+          "Extending Honeycom3_Custom_Post_Type",
+          "The constructor pattern: hooking into timber/context",
+          "Separating listing vs single logic",
+          "prepare_data() methods — structuring data for Twig"
+        ],
+        challenge: "Build a complete controller class for your 'projects' CPT. It should: hook into timber/context, detect listing vs single, prepare and pass relevant data to the right Twig template.",
+        resources: [
+          { name: "HC3 Base Controller Class", url: "https://bitbucket.org/fatbeehive/project-hc3-starter/src/master/web/wp-content/themes/honeycom3/classes/class-honeycom3-custom-post-type.php", note: "Read this class in full — understand every method before writing your own controller.", type: "codebase", icon: "🏗️" },
+          { name: "HC3 Stories Controller — Full Real Example", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/web/wp-content/themes/honeycom3/classes/class-honeycom3-stories.php", note: "The best learning resource for this pattern — a complete, real controller. Read it top to bottom.", type: "codebase", icon: "🏗️" },
+          { name: "MVC Pattern Explained — laracasts", url: "https://laracasts.com/series/php-for-beginners", note: "If MVC/controller concepts feel abstract, revisit the Laracasts PHP series — it explains separation of concerns clearly.", type: "free", icon: "🎬" }
+        ]
+      },
+      {
+        title: "WP_Query — The Right Way to Get Posts",
+        desc: "Every listing page, filter, and search goes through WP_Query.",
+        tags: ["wp", "hc3"],
+        topics: [
+          "WP_Query args — post_type, tax_query, meta_query, paged",
+          "The Loop vs get_posts() vs WP_Query",
+          "Pagination with WP_Query",
+          "Formatting query results for Twig consumption",
+          "Performance: what NOT to query"
+        ],
+        challenge: "Write a WP_Query that fetches 6 'projects' filtered by a selected 'project_type' term, paginated, ordered by date. Format the results as an array of [id, title, slug, image_url, type_label] and pass to Twig.",
+        resources: [
+          { name: "WP_Query — WordPress Docs", url: "https://developer.wordpress.org/reference/classes/wp_query/", note: "The complete WP_Query reference. Study tax_query, meta_query, and pagination args specifically.", type: "free", icon: "📖" },
+          { name: "HC3 WP_Query in a listing class — lines 227–248", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/e868fa4f1cb188d1bb632609778e45f27bdd6289/web/wp-content/themes/honeycom3/classes/class-honeycom3-stories.php#lines-227", note: "Exact real-world example of WP_Query being used in an HC3 listing controller.", type: "codebase", icon: "🏗️" },
+          { name: "Query Monitor Plugin", url: "https://wordpress.org/plugins/query-monitor/", note: "Use this to inspect the actual SQL your WP_Query generates — crucial for debugging and performance.", type: "free", icon: "🔧" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 5",
+    title: "User Data, CRUD & Permissions",
+    color: "#fb923c",
+    lessons: [
+      {
+        title: "WordPress Users, Roles & Capabilities",
+        desc: "Brad's key focus — controlling who can do what.",
+        tags: ["wp"],
+        topics: [
+          "Default roles and what they can do",
+          "current_user_can() — the gatekeeper function",
+          "Adding custom capabilities to roles",
+          "Restricting content by role in templates and PHP",
+          "Nonces — what they are and why you always use them"
+        ],
+        challenge: "Create a custom capability 'manage_projects'. Assign it to admins. Use current_user_can() in a Twig template to show an 'Edit' button only to users with that capability.",
+        resources: [
+          { name: "Roles & Capabilities — WordPress Docs", url: "https://developer.wordpress.org/plugins/users/roles-and-capabilities/", note: "The complete guide to WP roles, capabilities, and how to extend them.", type: "free", icon: "📖" },
+          { name: "current_user_can() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/current_user_can/", note: "Full reference for the most important permissions function in WordPress.", type: "free", icon: "📖" },
+          { name: "WordPress Nonces — Security Docs", url: "https://developer.wordpress.org/apis/security/nonces/", note: "How nonces work and why you must always use them for any user action.", type: "free", icon: "📖" }
+        ]
+      },
+      {
+        title: "Handling Form Data & User Input Safely",
+        desc: "User input is dangerous — learn the WP way of handling it.",
+        tags: ["wp", "php"],
+        topics: [
+          "sanitize_text_field(), sanitize_email(), absint() etc.",
+          "wp_verify_nonce() — CSRF protection",
+          "Processing forms via admin-post.php or AJAX",
+          "wp_redirect() after form submission",
+          "Storing user-submitted data with update_post_meta()"
+        ],
+        challenge: "Build a front-end form that submits a project enquiry. Use a nonce, sanitise all inputs, save to post meta on a CPT, and redirect on success with a query string success message.",
+        resources: [
+          { name: "Data Validation & Sanitisation — WordPress Security Docs", url: "https://developer.wordpress.org/apis/security/sanitizing/", note: "The definitive WP guide on sanitising input. Know every sanitize_* function listed here.", type: "free", icon: "📖" },
+          { name: "Validating Data — WordPress Docs", url: "https://developer.wordpress.org/apis/security/data-validation/", note: "Validation vs sanitisation — understand the difference and when to use each.", type: "free", icon: "📖" },
+          { name: "Handling admin-post.php — WordPress Docs", url: "https://developer.wordpress.org/plugins/security/", note: "How to correctly handle form submissions the WordPress way.", type: "free", icon: "📖" }
+        ]
+      },
+      {
+        title: "WordPress AJAX — Dynamic Interactions",
+        desc: "Filtering listing pages without reload — core to HC3 UX.",
+        tags: ["wp", "php"],
+        topics: [
+          "wp_ajax_ and wp_ajax_nopriv_ hooks",
+          "wp_localize_script() — passing PHP data to JS",
+          "Handling AJAX requests server-side",
+          "Returning JSON with wp_send_json_success()",
+          "Building a filterable listing page end-to-end"
+        ],
+        challenge: "Build an AJAX-powered filter for your projects listing. When a user selects a project_type, send an AJAX request, run a filtered WP_Query, and return HTML fragments to replace the listing.",
+        resources: [
+          { name: "AJAX in Plugins — WordPress Docs", url: "https://developer.wordpress.org/plugins/javascript/ajax/", note: "The official WP AJAX guide — covers both wp_ajax_ hooks and wp_localize_script.", type: "free", icon: "📖" },
+          { name: "wp_send_json_success() — WordPress Docs", url: "https://developer.wordpress.org/reference/functions/wp_send_json_success/", note: "Standard way to return JSON from a WP AJAX handler.", type: "free", icon: "📖" },
+          { name: "Brad Schiff's WordPress Course — JS/AJAX Section", url: "https://www.udemy.com/course/become-a-wordpress-developer-php-javascript/", note: "Brad covers this pattern — revisit his AJAX section now with your new hooks knowledge.", type: "paid", icon: "🎬" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 6",
+    title: "HC3 in Practice — Real Build",
+    color: "#6c63ff",
+    lessons: [
+      {
+        title: "Reading an HC3 Project Like a Senior Dev",
+        desc: "Build your mental map of the full HC3 codebase.",
+        tags: ["hc3"],
+        topics: [
+          "Understanding the submodule / overrides / theme structure",
+          "Tracing a page render from URL → PHP → Twig",
+          "Finding where a bug lives: template, controller, or data?",
+          "Reading class-honeycom3-*.php files confidently",
+          "The @hc, @wp namespace resolution order"
+        ],
+        challenge: "Pick any page on an HC3 project. Trace the full render path: which PHP template loads? Which controller class? Which Twig file? What data is passed? Write it out as a flow diagram.",
+        resources: [
+          { name: "HC3 Starter Repository", url: "https://bitbucket.org/fatbeehive/project-hc3-starter/src/master/", note: "Your primary codebase reference. Set up locally and use as your sandbox for every lesson.", type: "codebase", icon: "🏗️" },
+          { name: "HC3 Sprint 1 Setup Tasks", url: "https://bitbucket.org/fatbeehive/workspace/snippets/nEk56g/hc3-wp-sprint-1-tasks", note: "The internal Sprint 1 setup instructions — follow these to set up your local HC3 environment properly.", type: "codebase", icon: "🏗️" },
+          { name: "Query Monitor Plugin", url: "https://wordpress.org/plugins/query-monitor/", note: "Use this to identify which template is rendering on every page — essential for this lesson.", type: "free", icon: "🔧" }
+        ]
+      },
+      {
+        title: "Building a Full Feature in HC3 From Scratch",
+        desc: "Put everything together — this is your capstone lesson.",
+        tags: ["hc3", "project"],
+        topics: [
+          "Sprint 1 setup and customisation checklist",
+          "Adding a CPT via ACF JSON",
+          "Writing the controller class (listing + single)",
+          "Creating Twig templates with the correct namespaces",
+          "Setting up ACF fields and syncing via JSON",
+          "Testing, debugging, and deploying"
+        ],
+        challenge: "Build a 'Team Members' feature in an HC3 project from zero: CPT, taxonomy (department), ACF fields (photo, bio, role), controller class, listing Twig template with department filter, and single member page.",
+        resources: [
+          { name: "HC3 Dravet Syndrome — Full Real Project Reference", url: "https://bitbucket.org/fatbeehive/project-dravet-syndrome-uk/src/master/", note: "Study this entire project as your model. It implements every pattern you've learned.", type: "codebase", icon: "🏗️" },
+          { name: "HC3 Starter Site (Live)", url: "https://master-7rqtwti-vv26nbhbg5y2s.uk-1.platformsh.site/", note: "The live HC3 Starter — use this to see what Sprint 1 looks like out of the box.", type: "codebase", icon: "🏗️" },
+          { name: "ACF Local JSON — deployment reference", url: "https://www.advancedcustomfields.com/resources/local-json/", note: "Revisit JSON sync for deploying your ACF fields across environments.", type: "free", icon: "📖" }
+        ]
+      },
+      {
+        title: "Explaining Your Work to Clients",
+        desc: "The skill that separates support devs from trusted developers.",
+        tags: ["hc3", "project"],
+        topics: [
+          "Translating technical decisions into plain language",
+          "When a client asks 'why is it built this way?'",
+          "How to explain ACF, custom post types, and templates simply",
+          "Documenting your own features for handover",
+          "Building confidence: you understand it, so you can explain it"
+        ],
+        challenge: "Write a 150-word plain-English explanation of how the Honeycomb 3 template system works — as if explaining to a non-technical project manager. No jargon allowed.",
+        resources: [
+          { name: "WordPress Explained — WordPress.com Guide", url: "https://wordpress.com/support/", note: "See how WordPress itself explains concepts to non-technical users — borrow this tone.", type: "free", icon: "📖" },
+          { name: "ACF Docs — Field Types Overview", url: "https://www.advancedcustomfields.com/resources/#field-types", note: "Use the plain-language descriptions here as a model for how to explain ACF to clients.", type: "free", icon: "📖" },
+          { name: "Your Own Code — Internal Documentation", url: "#", note: "The best prep is documenting the features you build. Write a README for every HC3 feature you create.", type: "codebase", icon: "🏗️" }
+        ]
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = 'wp_mastery_progress';
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function saveProgress(p) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch {}
+}
+
+let progress = loadProgress();
+
+function totalLessons() {
+  return curriculum.reduce((a, p) => a + p.lessons.length, 0);
+}
+function completedCount() {
+  return Object.values(progress).filter(Boolean).length;
+}
+function updateProgress() {
+  const total = totalLessons();
+  const done = completedCount();
+  const pct = (done / total) * 100;
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('progressCount').innerHTML = `${done} <span>/ ${total} lessons</span>`;
+  document.getElementById('congrats').classList.toggle('show', done === total);
+}
+
+function lessonId(phaseIdx, lessonIdx) {
+  return `p${phaseIdx}_l${lessonIdx}`;
+}
+
+function buildTag(type) {
+  const labels = { php:'PHP', wp:'WP Hooks', twig:'Twig/Timber', project:'Project', quiz:'Challenge', acf:'ACF', hc3:'HC3' };
+  return `<span class="tag ${type}">${labels[type] || type}</span>`;
+}
+
+function buildLesson(lesson, pid, lid) {
+  const id = lessonId(pid, lid);
+  const isDone = !!progress[id];
+  const el = document.createElement('div');
+  el.className = 'lesson' + (isDone ? ' done' : '');
+  el.dataset.id = id;
+
+  const resourcesHtml = lesson.resources ? `
+    <div class="resources">
+      <h4>📚 Where to Learn This</h4>
+      <div class="resource-list">
+        ${lesson.resources.map(r => `
+          <a class="resource-item" href="${r.url}" target="_blank" rel="noopener">
+            <span class="resource-icon">${r.icon}</span>
+            <div class="resource-content">
+              <div class="resource-name">${r.name}</div>
+              <div class="resource-note">${r.note}</div>
+            </div>
+            <span class="resource-type ${r.type}">${r.type}</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  el.innerHTML = `
+    <div class="lesson-header">
+      <div class="check" data-id="${id}">
+        <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+          <path d="M1 4L4.5 7.5L11 1" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="lesson-meta">
+        <div class="lesson-title">${lesson.title}</div>
+        <div class="lesson-desc">${lesson.desc}</div>
+        <div class="lesson-tags">${lesson.tags.map(buildTag).join('')}<span class="tag quiz">Challenge</span></div>
+      </div>
+      <div class="expand-btn">▾</div>
+    </div>
+    <div class="lesson-body">
+      <h4>What You'll Learn</h4>
+      <ul>${lesson.topics.map(t => `<li>${t}</li>`).join('')}</ul>
+      ${resourcesHtml}
+      <div class="challenge">
+        <div class="challenge-label">🔥 Hands-On Challenge</div>
+        <p>${lesson.challenge}</p>
+      </div>
+      <button class="complete-btn" data-id="${id}">${isDone ? '✓ Completed — Mark Incomplete' : 'Mark as Complete'}</button>
+    </div>
+  `;
+
+  // Toggle expand
+  el.querySelector('.lesson-header').addEventListener('click', (e) => {
+    if (e.target.closest('.check')) return;
+    el.classList.toggle('open');
+  });
+
+  // Check toggle
+  el.querySelector('.check').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleComplete(id, el);
+  });
+
+  // Button
+  el.querySelector('.complete-btn').addEventListener('click', () => {
+    toggleComplete(id, el);
+  });
+
+  return el;
+}
+
+function toggleComplete(id, el) {
+  progress[id] = !progress[id];
+  saveProgress(progress);
+  const isDone = progress[id];
+  el.classList.toggle('done', isDone);
+  el.querySelector('.complete-btn').textContent = isDone ? '✓ Completed — Mark Incomplete' : 'Mark as Complete';
+  updateProgress();
+}
+
+function buildCurriculum() {
+  const container = document.getElementById('curriculum');
+  curriculum.forEach((phase, pi) => {
+    const section = document.createElement('div');
+    section.className = 'phase';
+    const header = document.createElement('div');
+    header.className = 'phase-header';
+    header.innerHTML = `
+      <span class="phase-dot" style="background:${phase.color}"></span>
+      <span class="phase-num">${phase.phase}</span>
+      <span class="phase-title">${phase.title}</span>
+    `;
+    section.appendChild(header);
+    const lessonsWrap = document.createElement('div');
+    lessonsWrap.className = 'phase-lessons';
+    phase.lessons.forEach((lesson, li) => {
+      lessonsWrap.appendChild(buildLesson(lesson, pi, li));
+    });
+    section.appendChild(lessonsWrap);
+    container.appendChild(section);
+  });
+}
+
+buildCurriculum();
+updateProgress();
+</script>
+</body>
+</html>
